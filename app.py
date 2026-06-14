@@ -49,23 +49,31 @@ def create_gauge(raw_value, title_text):
 
 if st.button("Refresh Live Data"):
     with st.spinner("Pulling latest data..."):
-        df = conn.read(worksheet="Sheet6", header=None)
+        # Fetch both worksheets securely 
+        df_sheet6 = conn.read(worksheet="Sheet6", header=None)
+        df_strategia = conn.read(worksheet="Strategia AS Auto Test 1", header=None)
         
-  
-    
     col1, col2, col3 = st.columns(3)
     
+    # Map gauges specifically to Sheet6 to match your existing logic
     with col1:
-        fig_fred = create_gauge(df.iloc[0, 0], "Fred")
+        fig_fred = create_gauge(df_sheet6.iloc[0, 0], "Fred")
         st.plotly_chart(fig_fred, use_container_width=True)
         
     with col2:
-        fig_etf = create_gauge(df.iloc[1, 0], "ETF")
+        fig_etf = create_gauge(df_sheet6.iloc[1, 0], "ETF")
         st.plotly_chart(fig_etf, use_container_width=True)
         
     with col3:
-        fig_clasic = create_gauge(df.iloc[2, 0], "Clasic")
+        fig_clasic = create_gauge(df_sheet6.iloc[2, 0], "Clasic")
         st.plotly_chart(fig_clasic, use_container_width=True)
     
     with st.expander("📂 View Raw Spreadsheet Data"):
-        st.dataframe(df, use_container_width=True)
+        # Use Streamlit tabs to switch views without reloading the page
+        tab1, tab2 = st.tabs(["Sheet6", "Strategia AS Auto Test 1"])
+        
+        with tab1:
+            st.dataframe(df_sheet6, use_container_width=True)
+            
+        with tab2:
+            st.dataframe(df_strategia, use_container_width=True)
